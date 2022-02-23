@@ -26,13 +26,13 @@ jobs:
 
       - name: Sets env vars for main
         run: |
-          echo "DOCKER_IMAGE_TAG=main" >> $GITHUB_ENV
-        if: startsWith(github.ref, 'refs/heads/main')
+          echo "DOCKER_IMAGE_TAG=$GITHUB_REF_NAME" >> $GITHUB_ENV
+        if: startsWith(github.ref, 'refs/heads/*')
         
       - name: Sets env vars for stage
         run: |
-          echo "DOCKER_IMAGE_TAG=stage" >> $GITHUB_ENV
-        if: startsWith(github.ref, 'refs/heads/stage')
+          echo "DOCKER_IMAGE_TAG=$GITHUB_REF_NAME" >> $GITHUB_ENV
+        if: startsWith(github.ref, 'refs/tags/v*')
 
       - name: Print Directory
         run: | 
