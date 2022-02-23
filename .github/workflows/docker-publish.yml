@@ -25,13 +25,18 @@ jobs:
         run: |
           if [ ${GITHUB_REF_SLUG} == "main" ] ; then
             TAGS="${REGISTRY_NAME}/github-actions-docker-sample:latest","${REGISTRY_NAME}/github-actions-docker-sample:prod"
+            TEST="test-var"
           else
             TAGS="${REGISTRY_NAME}/github-actions-docker-sample:${GITHUB_REF_SLUG}"
           fi
-          echo "::set-output name=IMAGE_TAGS::${TAGS}"
+          echo "::set-output name=IMAGE_TAGS::${TAGS}, name=TEST_VAR::${TEST}"
           
       - name: Checkout
         uses: actions/checkout@v2.4.0
+        
+      - name: Var
+        run : |
+          echo ${{ steps.prep.outputs.TEST_VAR }}
 
       - name: Docker Login
         uses: docker/login-action@v1.13.0
