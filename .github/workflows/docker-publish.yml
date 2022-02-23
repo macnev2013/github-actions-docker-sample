@@ -36,7 +36,7 @@ jobs:
         
       - name: Var
         run : |
-          echo ${{ steps.prep.outputs.TEST_VAR }}
+          echo ${{ steps.prep.outputs.IMAGE_TAGS }}
 
       - name: Docker Login
         uses: docker/login-action@v1.13.0
