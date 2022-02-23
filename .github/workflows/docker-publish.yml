@@ -22,7 +22,7 @@ jobs:
 
       - name: set-env
         run: |
-          if [[ ${GITHUB_REF_SLUG} == stage ]]; then
+          if [[ ${GITHUB_REF_SLUG} == main ]]; then
             echo "Branch: ${GITHUB_REF_SLUG}."
             echo "IMAGE_TAG=${GITHUB_REF_SLUG}" >> $GITHUB_ENV
           fi
