@@ -24,12 +24,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2.4.0
 
+      - name: Sets env vars for main
+        run: |
+          echo "DOCKER_IMAGE_TAG=main" >> $GITHUB_ENV
+        if: startsWith(github.ref, 'refs/heads/main')
+        
+      - name: Sets env vars for stage
+        run: |
+          echo "DOCKER_IMAGE_TAG=stage" >> $GITHUB_ENV
+        if: startsWith(github.ref, 'refs/heads/stage')
+
       - name: Print Directory
         run: | 
           pwd
           ls -al
           echo ${{ secrets.DOCKERHUB_LOGIN }}
           echo ${{ env.REGISTRY_NAME }}
+          echo ${{ env.DOCKER_IMAGE_TAG }}
     
       - name: Docker Login
         uses: docker/login-action@v1.13.0
@@ -42,7 +53,7 @@ jobs:
         uses: docker/build-push-action@v2.9.0
         with:
           context: .
-          tags: ${{ env.REGISTRY_NAME }}/github-actions-docker-sample:latest,${{ env.REGISTRY_NAME }}/github-actions-docker-sample:1.0.0
+          tags: ${{ env.REGISTRY_NAME }}/github-actions-docker-sample:latest,${{ env.REGISTRY_NAME }}/github-actions-docker-sample:${{ env.DOCKER_IMAGE_TAG }}
           file: build/Dockerfile.test
           push: true
           
