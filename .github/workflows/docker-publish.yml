@@ -24,21 +24,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2.4.0
 
-      - name: Extract branch name
+      - name: Sets env vars for main branch
         run: |
-          echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/} | sed 's/\//_/g')" >> $GITHUB_ENV
-          if $BRANCH_NAME == "beta" ; then
-            echo "DOCKER_IMAGE_NAME=beta-test" >> $GITHUB_ENV
-          else
-            echo "DOCKER_IMAGE_NAME=$BRANCH_NAME" >> $GITHUB_ENV
-          fi
-        if: ${{ github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/beta' }}
+          echo "DOCKER_IMAGE_TAG=prod" >> $GITHUB_ENV
+        if: ${{ github.ref == 'refs/heads/main' }}
 
-      - name: Print Directory
-        run: | 
-          pwd
-          ls -al
-          echo ${{ env.DOCKER_IMAGE_NAME }}
+      - name: Sets env vars for other branch
+        run: |
+          echo "DOCKER_IMAGE_TAG=$(echo ${GITHUB_REF#refs/heads/} | sed 's/\//_/g')" >> $GITHUB_ENV
+        if: ${{ github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/beta' }}
     
       - name: Docker Login
         uses: docker/login-action@v1.13.0
@@ -48,10 +42,20 @@ jobs:
           logout: true
     
       - name: Build and push Docker images
+        if: ${{ github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/beta' }}
         uses: docker/build-push-action@v2.9.0
         with:
           context: .
-          tags: ${{ env.REGISTRY_NAME }}/github-actions-docker-sample:latest,${{ env.REGISTRY_NAME }}/github-actions-docker-sample:${{ env.DOCKER_IMAGE_NAME }}
+          tags: ${{ env.REGISTRY_NAME }}/github-actions-docker-sample:${{ env.DOCKER_IMAGE_TAG }}
+          file: build/Dockerfile.test
+          push: true
+
+      - name: Build and push Docker images with Latest
+        if: ${{ github.ref == 'refs/heads/main' }}
+        uses: docker/build-push-action@v2.9.0
+        with:
+          context: .
+          tags: ${{ env.REGISTRY_NAME }}/github-actions-docker-sample:latest, ${{ env.REGISTRY_NAME }}/github-actions-docker-sample:${{ env.DOCKER_IMAGE_TAG }}
           file: build/Dockerfile.test
           push: true
           
