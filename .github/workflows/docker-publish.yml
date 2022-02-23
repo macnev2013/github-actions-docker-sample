@@ -23,8 +23,11 @@ jobs:
       - name: set-env
         run: |
           if [[ ${GITHUB_REF_SLUG} == main ]]; then
-            echo "Branch: ${GITHUB_REF_SLUG}."
+            echo "IMAGE_TAG=prod" >> $GITHUB_ENV
+            echo "IMAGE_NAMES=${{ env.REGISTRY_NAME }}/github-actions-docker-sample:latest,${{ env.REGISTRY_NAME }}/github-actions-docker-sample:${{ env.IMAGE_TAG }}" >> $GITHUB_ENV
+          else
             echo "IMAGE_TAG=${GITHUB_REF_SLUG}" >> $GITHUB_ENV
+            echo "IMAGE_NAMES=${{ env.REGISTRY_NAME }}/github-actions-docker-sample:${{ env.IMAGE_TAG }}" >> $GITHUB_ENV
           fi
 
       - name: Checkout
@@ -42,16 +45,16 @@ jobs:
         uses: docker/build-push-action@v2.9.0
         with:
           context: .
-          tags: ${{ env.REGISTRY_NAME }}/github-actions-docker-sample:${{ env.IMAGE_TAG }}
+          tags: ${{ env.IMAGE_NAMES }}
           file: build/Dockerfile.test
           push: true
 
-      - name: Build and push Docker images with Latest
-        if: ${{ github.ref == 'refs/heads/main' }}
-        uses: docker/build-push-action@v2.9.0
-        with:
-          context: .
-          tags: ${{ env.REGISTRY_NAME }}/github-actions-docker-sample:latest, ${{ env.REGISTRY_NAME }}/github-actions-docker-sample:${{ env.IMAGE_TAG }}
-          file: build/Dockerfile.test
-          push: true
+#       - name: Build and push Docker images with Latest
+#         if: ${{ github.ref == 'refs/heads/main' }}
+#         uses: docker/build-push-action@v2.9.0
+#         with:
+#           context: .
+#           tags: ${{ env.REGISTRY_NAME }}/github-actions-docker-sample:latest, ${{ env.REGISTRY_NAME }}/github-actions-docker-sample:${{ env.IMAGE_TAG }}
+#           file: build/Dockerfile.test
+#           push: true
           
