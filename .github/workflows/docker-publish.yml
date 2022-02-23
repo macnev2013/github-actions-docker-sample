@@ -6,10 +6,10 @@ name: CI/CD
 
 on:
   push:
-    branches: [ main, stage ]
+    branches: [ main, stage, beta ]
     tags: [ 'v*.*.*' ]
   pull_request:
-    branches: [ main, stage ]
+    branches: [ main, stage, beta ]
 
 env:
   # github.repository as <account>/<repo>
