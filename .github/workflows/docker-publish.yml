@@ -46,7 +46,7 @@ jobs:
         uses: docker/build-push-action@v2.9.0
         with:
           context: .
-          tags: ${{ env.REGISTRY_NAME }}/github-actions-docker-sample:latest,${{ env.REGISTRY_NAME }}/github-actions-docker-sample:${BRANCH_NAME}
+          tags: ${{ env.REGISTRY_NAME }}/github-actions-docker-sample:latest,${{ env.REGISTRY_NAME }}/github-actions-docker-sample:${{ env.BRANCH_NAME }}
           file: build/Dockerfile.test
           push: true
           
