@@ -29,7 +29,8 @@ jobs:
           else
             TAGS="${REGISTRY_NAME}/github-actions-docker-sample:${GITHUB_REF_SLUG}"
           fi
-          echo "::set-output name=IMAGE_TAGS::${TAGS}, name=TEST_VAR::${TEST}"
+          echo "::set-output name=IMAGE_TAGS::${TAGS}"
+          echo "::set-output name=IMAGE_TEST::${TEST}"
           
       - name: Checkout
         uses: actions/checkout@v2.4.0
@@ -37,6 +38,7 @@ jobs:
       - name: Var
         run : |
           echo ${{ steps.prep.outputs.IMAGE_TAGS }}
+          echo ${{ steps.prep.outputs.IMAGE_TEST }}
 
       - name: Docker Login
         uses: docker/login-action@v1.13.0
