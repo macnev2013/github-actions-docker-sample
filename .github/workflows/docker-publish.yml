@@ -25,6 +25,9 @@ jobs:
           if [ ${GITHUB_REF_SLUG} == "main" ] ; then
             echo "NUCLEUS_TAGS=${REGISTRY_NAME}/github-actions-docker-sample:latest","${REGISTRY_NAME}/github-actions-docker-sample:prod" >> $GITHUB_ENV
             echo "SYNAPSE_TAGS=${REGISTRY_NAME}/github-actions-docker-sample:latest","${REGISTRY_NAME}/github-actions-docker-sample:prod" >> $GITHUB_ENV
+          elif [ startsWith(${GITHUB_REF_SLUG}, 'v')] ; then
+            echo "NUCLEUS_TAGS=${REGISTRY_NAME}/github-actions-docker-sample:latest","${REGISTRY_NAME}/github-actions-docker-sample:${GITHUB_REF_SLUG:1}" >> $GITHUB_ENV
+            echo "SYNAPSE_TAGS=${REGISTRY_NAME}/github-actions-docker-sample:latest","${REGISTRY_NAME}/github-actions-docker-sample:${GITHUB_REF_SLUG:1}" >> $GITHUB_ENV
           else
             echo "NUCLEUS_TAGS=${REGISTRY_NAME}/github-actions-docker-sample:${GITHUB_REF_SLUG}" >> $GITHUB_ENV
             echo "SYNAPSE_TAGS=${REGISTRY_NAME}/github-actions-docker-sample:${GITHUB_REF_SLUG}" >> $GITHUB_ENV
