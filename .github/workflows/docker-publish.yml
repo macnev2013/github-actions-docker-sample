@@ -1,8 +1,4 @@
 name: CI/CD
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
 
 on:
   push:
@@ -21,19 +17,22 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
+      - name: Inject slug/short variables
+        uses: rlespinasse/github-slug-action@v3.x
+
+      - name: Setup Docker Image Tags
+        id: prep
+        run: |
+          if [ ${GITHUB_REF_SLUG} == "main" ] ; then
+            TAGS="${REGISTRY_NAME}/github-actions-docker-sample:latest","${REGISTRY_NAME}/github-actions-docker-sample:prod"
+          else
+            TAGS="${REGISTRY_NAME}/github-actions-docker-sample:${GITHUB_REF_SLUG}"
+          fi
+          echo "::set-output name=IMAGE_TAGS::${TAGS}"
+          
       - name: Checkout
         uses: actions/checkout@v2.4.0
 
-      - name: Sets env vars for main branch
-        run: |
-          echo "DOCKER_IMAGE_TAG=prod" >> $GITHUB_ENV
-        if: ${{ github.ref == 'refs/heads/main' }}
-
-      - name: Sets env vars for other branch
-        run: |
-          echo "DOCKER_IMAGE_TAG=$(echo ${GITHUB_REF#refs/heads/} | sed 's/\//_/g')" >> $GITHUB_ENV
-        if: ${{ github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/beta' }}
-    
       - name: Docker Login
         uses: docker/login-action@v1.13.0
         with:
@@ -42,21 +41,10 @@ jobs:
           logout: true
     
       - name: Build and push Docker images
-        if: ${{ github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/beta' }}
+        if: ${{ github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/beta' || github.ref == 'refs/heads/main' }}
         uses: docker/build-push-action@v2.9.0
         with:
           context: .
-          tags: ${{ env.REGISTRY_NAME }}/github-actions-docker-sample:${{ env.DOCKER_IMAGE_TAG }}
+          tags: ${{ steps.prep.outputs.IMAGE_TAGS }}
           file: build/Dockerfile.test
           push: true
-
-      - name: Build and push Docker images with Latest
-        if: ${{ github.ref == 'refs/heads/main' }}
-        uses: docker/build-push-action@v2.9.0
-        with:
-          context: .
-          tags: ${{ env.REGISTRY_NAME }}/github-actions-docker-sample:latest, ${{ env.REGISTRY_NAME }}/github-actions-docker-sample:${{ env.DOCKER_IMAGE_TAG }}
-          file: build/Dockerfile.test
-          push: true
-          
-          
