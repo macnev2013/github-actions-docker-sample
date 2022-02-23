@@ -32,7 +32,7 @@ jobs:
           else
             echo "DOCKER_IMAGE_NAME=${{ env.BRANCH_NAME }}" >> $GITHUB_ENV
           fi
-        if: startsWith(github.ref, 'refs/heads/')
+        if: ${{ github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/beta' }}
 
       - name: Print Directory
         run: | 
