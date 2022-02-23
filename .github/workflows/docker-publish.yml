@@ -20,18 +20,16 @@ jobs:
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v3.x
 
-      - name: set-env
+      - name: Setup Docker Image Tags
+        id: docker_tags
         run: |
           if [ ${GITHUB_REF_SLUG} == "main" ] ; then
-            echo "IMAGE_TAG=prod" >> $GITHUB_ENV
-            echo "IMAGE_NAMES=${REGISTRY_NAME}/github-actions-docker-sample:latest,${REGISTRY_NAME}/github-actions-docker-sample:${IMAGE_TAG}" >> $GITHUB_ENV
-            echo "Image tags--+: ${IMAGE_TAG}"
-            echo "Image Names--+: ${IMAGE_NAMES}"
+            TAGS=`[${REGISTRY_NAME}/github-actions-docker-sample:latest,${REGISTRY_NAME}/github-actions-docker-sample:prod]`
           else
-            echo "not main branch"
-            echo "IMAGE_TAG=${GITHUB_REF_SLUG}" >> $GITHUB_ENV
-            echo "IMAGE_NAMES=${REGISTRY_NAME}/github-actions-docker-sample:${IMAGE_TAG}" >> $GITHUB_ENV
+            TAGS=`[${REGISTRY_NAME}/github-actions-docker-sample:${GITHUB_REF_SLUG}]`
           fi
+          echo '::set-output name=tags::'$TAGS
+          
 
       - name: Checkout
         uses: actions/checkout@v2.4.0
@@ -48,7 +46,7 @@ jobs:
         uses: docker/build-push-action@v2.9.0
         with:
           context: .
-          tags: ${{ env.IMAGE_NAMES }}
+          tags: ${{ fromJson(steps.gen_tags.outputs.tags) }}
           file: build/Dockerfile.test
           push: true
 
