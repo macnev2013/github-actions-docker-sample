@@ -24,9 +24,9 @@ jobs:
         id: docker_tags
         run: |
           if [ ${GITHUB_REF_SLUG} == "main" ] ; then
-            TAGS=`[${REGISTRY_NAME}/github-actions-docker-sample:latest,${REGISTRY_NAME}/github-actions-docker-sample:prod]`
+            TAGS='[${REGISTRY_NAME}/github-actions-docker-sample:latest,${REGISTRY_NAME}/github-actions-docker-sample:prod]'
           else
-            TAGS=`[${REGISTRY_NAME}/github-actions-docker-sample:${GITHUB_REF_SLUG}]`
+            TAGS='[${REGISTRY_NAME}/github-actions-docker-sample:${GITHUB_REF_SLUG}]'
           fi
           echo '::set-output name=tags::'$TAGS
           
