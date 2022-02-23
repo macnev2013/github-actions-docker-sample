@@ -27,7 +27,7 @@ jobs:
       - name: Extract branch name
         run: |
           echo "DOCKER_IMAGE_NAME=$(echo ${GITHUB_REF#refs/heads/} | sed 's/\//_/g')" >> $GITHUB_ENV
-        if: ${{ github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/beta' }}
+        if: startsWith(github.ref, 'refs/heads/')
 
       - name: Print Directory
         run: | 
