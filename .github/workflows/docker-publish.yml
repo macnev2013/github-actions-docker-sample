@@ -6,10 +6,10 @@ name: CI/CD
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, stage, beta ]
     tags: [ 'v*.*.*' ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, stage, beta ]
 
 env:
   # github.repository as <account>/<repo>
@@ -24,23 +24,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2.4.0
 
-      - name: Sets env vars for main
+      - name: Sets env vars for main branch
         run: |
-          echo "DOCKER_IMAGE_TAG=main" >> $GITHUB_ENV
-        if: startsWith(github.ref, 'refs/heads/main')
-        
-      - name: Sets env vars for stage
-        run: |
-          echo "DOCKER_IMAGE_TAG=stage" >> $GITHUB_ENV
-        if: startsWith(github.ref, 'refs/heads/stage')
+          echo "DOCKER_IMAGE_TAG=prod" >> $GITHUB_ENV
+        if: ${{ github.ref == 'refs/heads/main' }}
 
-      - name: Print Directory
-        run: | 
-          pwd
-          ls -al
-          echo ${{ secrets.DOCKERHUB_LOGIN }}
-          echo ${{ env.REGISTRY_NAME }}
-          echo ${{ env.DOCKER_IMAGE_TAG }}
+      - name: Sets env vars for other branch
+        run: |
+          echo "DOCKER_IMAGE_TAG=$(echo ${GITHUB_REF#refs/heads/} | sed 's/\//_/g')" >> $GITHUB_ENV
+        if: ${{ github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/beta' }}
     
       - name: Docker Login
         uses: docker/login-action@v1.13.0
@@ -50,11 +42,20 @@ jobs:
           logout: true
     
       - name: Build and push Docker images
+        if: ${{ github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/beta' }}
         uses: docker/build-push-action@v2.9.0
         with:
           context: .
-          tags: ${{ env.REGISTRY_NAME }}/github-actions-docker-sample:latest,${{ env.REGISTRY_NAME }}/github-actions-docker-sample:${{ env.DOCKER_IMAGE_TAG }}
+          tags: ${{ env.REGISTRY_NAME }}/github-actions-docker-sample:${{ env.DOCKER_IMAGE_TAG }}
           file: build/Dockerfile.test
           push: true
-          
+
+      - name: Build and push Docker images with Latest
+        if: ${{ github.ref == 'refs/heads/main' }}
+        uses: docker/build-push-action@v2.9.0
+        with:
+          context: .
+          tags: ${{ env.REGISTRY_NAME }}/github-actions-docker-sample:latest, ${{ env.REGISTRY_NAME }}/github-actions-docker-sample:${{ env.DOCKER_IMAGE_TAG }}
+          file: build/Dockerfile.test
+          push: true
           
