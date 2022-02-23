@@ -20,15 +20,6 @@ jobs:
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v3.x
 
-
-      - name: Setting up Env
-        run: |
-          if [ ${GITHUB_REF_SLUG} == "main" ] ; then
-            TAGS="${REGISTRY_NAME}/github-actions-docker-sample:latest","${REGISTRY_NAME}/github-actions-docker-sample:"
-          else
-            TAGS="${REGISTRY_NAME}/github-actions-docker-sample:${GITHUB_REF_SLUG}"
-          fi
-
       - name: Setup Docker Image Tags
         run: |
           if [ ${GITHUB_REF_SLUG} == "main" ] ; then
@@ -38,7 +29,6 @@ jobs:
             echo "NUCLEUS_TAGS=${REGISTRY_NAME}/github-actions-docker-sample:${GITHUB_REF_SLUG}" >> $GITHUB_ENV
             echo "SYNAPSE_TAGS=${REGISTRY_NAME}/github-actions-docker-sample:${GITHUB_REF_SLUG}" >> $GITHUB_ENV
           fi
-          
           
       - name: Checkout
         uses: actions/checkout@v2.4.0
