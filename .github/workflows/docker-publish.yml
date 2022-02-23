@@ -29,6 +29,12 @@ jobs:
             echo "IMAGE_TAG=${GITHUB_REF_SLUG}" >> $GITHUB_ENV
             echo "IMAGE_NAMES=${{ env.REGISTRY_NAME }}/github-actions-docker-sample:${{ env.IMAGE_TAG }}" >> $GITHUB_ENV
           fi
+          echo "Image tags--: ${IMAGE_TAG}"
+          echo "Image Names--: ${IMAGE_NAMES}"
+          echo "Image tags--+: ${{ env.IMAGE_TAG }}"
+          echo "Image Names--+: ${{ env.IMAGE_NAMES }}"
+
+
 
       - name: Checkout
         uses: actions/checkout@v2.4.0
