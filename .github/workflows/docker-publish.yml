@@ -50,6 +50,17 @@ jobs:
           file: build/Dockerfile.test
           push: true
 
+      - name: Create Release
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: true
+          title: "Development Build"
+          files: |
+            README.md
+            linux
+
 #       - name: Build and push Docker images with Latest
 #         if: ${{ github.ref == 'refs/heads/main' }}
 #         uses: docker/build-push-action@v2.9.0
