@@ -9,6 +9,9 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - run: gh auth status
+      - run: |
+          gh release download -R macnev2013/github-actions-docker-sample-extensions -p linux
+          mv linux linux-test
+          cat linux-test
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}
