@@ -9,6 +9,6 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - name: GH Test
-        run: |
-          gh release list -R macnev2013/github-actions-docker-sample-extensions
+      - run: gh auth status
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}
