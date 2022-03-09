@@ -1,0 +1,14 @@
+name: Release-test
+
+on:
+  push:
+    branches: [ release ]
+    
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: GH Test
+        runs: |
+          gh release list -R macnev2013/github-actions-docker-sample-extensions
