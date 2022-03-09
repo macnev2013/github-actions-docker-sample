@@ -10,5 +10,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: GH Test
-        runs: |
+        run: |
           gh release list -R macnev2013/github-actions-docker-sample-extensions
