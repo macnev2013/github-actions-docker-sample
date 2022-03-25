@@ -25,12 +25,11 @@ jobs:
         id: prep
         run: |
           if [ ${GITHUB_REF_SLUG} == "main" ] ; then
-            TAGS="${REGISTRY_NAME}/github-actions-docker-sample:latest","${REGISTRY_NAME}/github-actions-docker-sample:prod"
+            echo "TAGS=${REGISTRY_NAME}/github-actions-docker-sample:latest" >> $GITHUB_ENV
           else
-            TAGS="${REGISTRY_NAME}/github-actions-docker-sample:${GITHUB_REF_SLUG}"
+            echo "TAGS=${REGISTRY_NAME}/github-actions-docker-sample:${GITHUB_REF_SLUG}" >> $GITHUB_ENV
           fi
-          echo "::set-output name=IMAGE_TAGS::${TAGS}"
-          
+          echo "BOTNAME=Neuron bot ${GITHUB_REF_SLUG}" >> $GITHUB_ENV
 
       - name: Checkout
         uses: actions/checkout@v2.4.0
@@ -47,7 +46,7 @@ jobs:
         uses: docker/build-push-action@v2.9.0
         with:
           context: .
-          tags: ${REGISTRY_NAME}/github-actions-docker-sample:latest
+          tags: ${{ env.TAGS }}
           file: build/Dockerfile.test
           push: true
 
