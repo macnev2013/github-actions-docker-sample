@@ -48,7 +48,7 @@ jobs:
         with:
           context: .
           tags: |
-            "${REGISTRY_NAME}/github-actions-docker-sample:latest"
+            '${REGISTRY_NAME}/github-actions-docker-sample:latest'
           file: build/Dockerfile.test
           push: true
 
